@@ -8,8 +8,8 @@ on:
 env:
   REGION: africa
   AREA: rwanda
-  IMAGE: ghcr.io/jinigarashi/tilemaker:pr-1
-  PMTILES_VERSION: 1.8.0
+  TILEMAKER_IMAGE: ghcr.io/jinigarashi/tilemaker:pr-1
+  PMTILES_IMAGE: ghcr.io/protomaps/go-pmtiles:main
 
 jobs:
 
@@ -27,20 +27,15 @@ jobs:
         curl -L http://download.geofabrik.de/${{ env.REGION }}/${{ env.AREA }}-latest.osm.pbf -o ./data/${{ env.AREA }}.osm.pbf
 
     - name: pull docker image
-      run: docker pull ${{ env.IMAGE }}
+      run: |
+        docker pull ${{ env.TILEMAKER_IMAGE }}
+        docker pull ${{ env.PMTILES_IMAGE }}
 
     - name: Build openmaptiles-compatible mbtiles files of given area
-      run: docker run -v $(pwd)/data:/srv ${{ env.IMAGE }} --input=/srv/${{ env.AREA }}.osm.pbf --output=/srv/${{ env.AREA }}.mbtiles
-
-    - name: Download pmtiles converter
-      run: |
-        curl -L https://github.com/protomaps/go-pmtiles/releases/download/v${{ env.PMTILES_VERSION }}/go-pmtiles_${{ env.PMTILES_VERSION }}_Linux_arm64.tar.gz -o go-pmtiles.tar.gz
-        tar -xvzf go-pmtiles.tar.gz
-        mkdir bin
-        mv pmtiles /usr/local/bin/pmtiles
+      run: docker run -v $(pwd)/data:/srv ${{ env.TILEMAKER_IMAGE }} --input=/srv/${{ env.AREA }}.osm.pbf --output=/srv/${{ env.AREA }}.mbtiles
 
     - name: Convert mbtiles to pmtiles
-      run: pmtiles convert ./data/${{ env.AREA }}.mbtiles ./data/${{ env.AREA }}.pmtiles
+      run: docker run -v $(pwd)/data:/srv ${{ env.PMTILES_IMAGE }} convert /srv/${{ env.AREA }}.mbtiles /srv/${{ env.AREA }}.pmtiles
 
     - name: clean deploy folder
       run: |
