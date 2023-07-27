@@ -34,11 +34,16 @@ jobs:
 
     - name: Download pmtiles converter
       run: |
-        curl https://github.com/protomaps/go-pmtiles/releases/download/v${{ env.PMTILES_VERSION }}/go-pmtiles_${{ env.PMTILES_VERSION }}_Linux_arm64.tar.gz -o go-pmtiles.tar.gz
+        curl -L https://github.com/protomaps/go-pmtiles/releases/download/v${{ env.PMTILES_VERSION }}/go-pmtiles_${{ env.PMTILES_VERSION }}_Linux_arm64.tar.gz -o go-pmtiles.tar.gz
         tar -xvzf go-pmtiles.tar.gz
 
     - name: Convert mbtiles to pmtiles
       run: ./pmtiles convert ./data/${{ env.AREA }}.mbtiles ./data/${{ env.AREA }}.pmtiles
+
+    - name: clean deploy folder
+      run: |
+        rm ./data/${{ env.AREA }}.osm.pbf
+        rm ./data/${{ env.AREA }}.mbtiles
 
     - name: deploy to gh-pages
       uses: JamesIves/github-pages-deploy-action@v4.4.3
