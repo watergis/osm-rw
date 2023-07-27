@@ -6,6 +6,7 @@ on:
   pull_request:
 
 env:
+  REGION: africa
   AREA: kenya
   IMAGE: ghcr.io/jinigarashi/tilemaker:pr-1
   PMTILES_VERSION: 1.8.0
@@ -23,13 +24,13 @@ jobs:
     - name: Download PBF file
       run: |
         mkdir data
-        curl http://download.geofabrik.de/europe/${AREA}-latest.osm.pbf -o ./data/${AREA}.osm.pbf
+        curl -L http://download.geofabrik.de/${{ env.REGION }}/${{ env.AREA }}-latest.osm.pbf -o ./data/${{ env.AREA }}.osm.pbf
 
     - name: pull docker image
       run: docker pull ${{ env.IMAGE }}
 
     - name: Build openmaptiles-compatible mbtiles files of given area
-      run: docker run -v $(pwd)/data:/srv ${{ env.IMAGE }} /srv/${{ env.AREA }}.osm.pbf --output=/srv/${{ env.AREA }}.mbtiles
+      run: docker run -v $(pwd)/data:/srv ${{ env.IMAGE }} --input=/srv/${{ env.AREA }}.osm.pbf --output=/srv/${{ env.AREA }}.mbtiles
 
     - name: Download pmtiles converter
       run: |
