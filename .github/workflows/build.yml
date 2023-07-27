@@ -21,15 +21,15 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Download PBF file
-      run: curl http://download.geofabrik.de/europe/${AREA}-latest.osm.pbf -o ${AREA}.osm.pbf
+      run: |
+        mkdir data
+        curl http://download.geofabrik.de/europe/${AREA}-latest.osm.pbf -o ./data/${AREA}.osm.pbf
 
     - name: pull docker image
       run: docker pull ${{ env.IMAGE }}
 
     - name: Build openmaptiles-compatible mbtiles files of given area
-      run: |
-        mkdir data
-        docker run -v $(pwd)/data:/srv ${{ env.IMAGE }} /srv/${{ env.AREA }}.osm.pbf --output=/srv/${{ env.AREA }}.mbtiles
+      run: docker run -v $(pwd)/data:/srv ${{ env.IMAGE }} /srv/${{ env.AREA }}.osm.pbf --output=/srv/${{ env.AREA }}.mbtiles
 
     - name: Download pmtiles converter
       run: |
