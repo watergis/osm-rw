@@ -7,7 +7,7 @@ on:
 
 env:
   REGION: africa
-  AREA: kenya
+  AREA: rwanda
   TILEMAKER_IMAGE: ghcr.io/jinigarashi/tilemaker:pr-1
   PMTILES_IMAGE: ghcr.io/protomaps/go-pmtiles:main
 
@@ -43,12 +43,9 @@ jobs:
         rm ./data/${{ env.AREA }}.osm.pbf
         rm ./data/${{ env.AREA }}.mbtiles
 
-    - name: Publish to Cloudflare Pages
-      uses: cloudflare/pages-action@v1
+    - name: deploy to gh-pages
+      uses: JamesIves/github-pages-deploy-action@v4.4.3
+      if: ${{ github.ref == 'refs/heads/main' }}
       with:
-        apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        projectName: ${{ secrets.CLOUDFLARE_PROJECT_NAME }}
-        directory: data
-        # Enable Wrangler v3
-        wranglerVersion: '3'
+        branch: gh-pages # The branch the action should deploy to.
+        folder: data # The folder the action should deploy.
