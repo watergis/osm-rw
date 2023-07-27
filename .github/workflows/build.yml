@@ -37,8 +37,7 @@ jobs:
         curl -L https://github.com/protomaps/go-pmtiles/releases/download/v${{ env.PMTILES_VERSION }}/go-pmtiles_${{ env.PMTILES_VERSION }}_Linux_arm64.tar.gz -o go-pmtiles.tar.gz
         tar -xvzf go-pmtiles.tar.gz
         mkdir bin
-        mv pmtiles ./bin/pmtiles
-        echo ::add-path::$HOME/bin
+        mv pmtiles /usr/local/bin/pmtiles
 
     - name: Convert mbtiles to pmtiles
       run: pmtiles convert ./data/${{ env.AREA }}.mbtiles ./data/${{ env.AREA }}.pmtiles
