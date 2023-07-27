@@ -7,7 +7,7 @@ on:
 
 env:
   REGION: africa
-  AREA: rwanda
+  AREA: kenya
   TILEMAKER_IMAGE: ghcr.io/jinigarashi/tilemaker:pr-1
   PMTILES_IMAGE: ghcr.io/protomaps/go-pmtiles:main
 
