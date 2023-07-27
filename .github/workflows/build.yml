@@ -23,9 +23,13 @@ jobs:
     - name: Download PBF file
       run: curl http://download.geofabrik.de/europe/${AREA}-latest.osm.pbf -o ${AREA}.osm.pbf
 
+    - name: pull docker image
+      run: docker pull ${{ env.IMAGE }}
+
     - name: Build openmaptiles-compatible mbtiles files of given area
       run: |
-        docker run -v ./data:/srv -i -t --rm ${{ env.IMAGE }} /srv/${{ env.AREA }}.osm.pbf --output=/srv/${{ env.AREA }}.mbtiles
+        mkdir data
+        docker run -v ./data:/srv -i -t ${{ env.IMAGE }} /srv/${{ env.AREA }}.osm.pbf --output=/srv/${{ env.AREA }}.mbtiles
 
     - name: Download pmtiles converter
       run: |
