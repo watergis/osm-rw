@@ -35,7 +35,9 @@ jobs:
       run: docker run -v $(pwd)/data:/srv ${{ env.TILEMAKER_IMAGE }} --input=/srv/${{ env.AREA }}.osm.pbf --output=/srv/${{ env.AREA }}.mbtiles
 
     - name: Convert mbtiles to pmtiles
-      run: docker run -v $(pwd)/data:/srv ${{ env.PMTILES_IMAGE }} convert /srv/${{ env.AREA }}.mbtiles /srv/${{ env.AREA }}.pmtiles
+      run: |
+        docker run -v $(pwd)/data:/srv ${{ env.PMTILES_IMAGE }} convert -h
+        docker run -v $(pwd)/data:/srv ${{ env.PMTILES_IMAGE }} convert /srv/${{ env.AREA }}.mbtiles /srv/${{ env.AREA }}.pmtiles
 
     - name: clean deploy folder
       run: |
