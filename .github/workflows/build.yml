@@ -38,7 +38,7 @@ jobs:
         tar -xvzf go-pmtiles.tar.gz
 
     - name: Convert mbtiles to pmtiles
-      run: ./pmtiles convert ./data/${{ env.AREA }}.mbtiles ./data/${{ env.AREA }}.pmtiles
+      run: pmtiles convert ./data/${{ env.AREA }}.mbtiles ./data/${{ env.AREA }}.pmtiles
 
     - name: clean deploy folder
       run: |
