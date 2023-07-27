@@ -1,0 +1,48 @@
+name: "Build & deploy vector tiles"
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+env:
+  AREA: kenya
+  IMAGE: ghcr.io/jinigarashi/tilemaker:pr-1
+  PMTILES_VERSION: 1.8.0
+
+jobs:
+
+  tilemaker-build:
+    name: Generate vector tiles by tilemaker
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v3
+
+    - name: Download PBF file
+      run: curl http://download.geofabrik.de/europe/${AREA}-latest.osm.pbf -o ${AREA}.osm.pbf
+
+    - name: Build openmaptiles-compatible mbtiles files of given area
+      run: |
+        docker run -v .:/srv -i -t --rm ${{ env.IMAGE }} /srv/${{ env.AREA }}.osm.pbf --output=/srv/${{ env.AREA }}.mbtiles
+
+    - name: Download pmtiles converter
+      run: |
+        curl https://github.com/protomaps/go-pmtiles/releases/download/v${{ env.PMTILES_VERSION }}/go-pmtiles_${{ env.PMTILES_VERSION }}_Linux_arm64.tar.gz -o go-pmtiles.tar.gz
+        tar -xvzf go-pmtiles.tar.gz
+
+    - name: Convert mbtiles to pmtiles
+      run: ./pmtiles convert ${{ env.AREA }}.mbtiles ${{ env.AREA }}.pmtiles
+
+    - name: move to deploy folder
+      run: |
+        mkdir deploy
+        mv ${{ env.AREA }}.pmtiles deploy/${{ env.AREA }}.pmtiles
+
+    - name: deploy to gh-pages
+      uses: JamesIves/github-pages-deploy-action@v4.4.3
+      if: ${{ github.ref == 'refs/heads/main' }}
+      with:
+        branch: gh-pages # The branch the action should deploy to.
+        folder: deploy # The folder the action should deploy.
