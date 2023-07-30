@@ -10,7 +10,7 @@ on:
 env:
   REGION: africa
   AREA: rwanda
-  TILEMAKER_IMAGE: ghcr.io/jinigarashi/tilemaker:pr-1
+  TILEMAKER_IMAGE: ghcr.io/jinigarashi/tilemaker:master
   PMTILES_IMAGE: ghcr.io/protomaps/go-pmtiles:main
 
 jobs:
